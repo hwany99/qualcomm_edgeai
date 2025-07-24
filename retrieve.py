@@ -9,10 +9,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 ### DB ###
-base_dir = './data/'
-df = pd.read_csv(base_dir + 'ref.csv') # ref.csv에 있는 Source_path를 기준으로 pdf 파일을 읽어옴
 
-# PDF 파일 경로를 기준으로 vector db 생성
+# 있으면 가져오고 없으면 만들기
+base_dir = "/home/a2024712006/qualcomm/"
+df = pd.read_csv(base_dir + "data/full_data.csv")
 db_filename = os.path.join(base_dir, 'pdf_databases.pkl')
 if os.path.exists(db_filename):
     pdf_databases = load_pdf_databases(db_filename)
@@ -28,7 +28,7 @@ def process_output(category, input_data, task):
     # 해당 category에서 관련된 정보 가져옴
     retriever = pdf_databases[category]
     context = retriever.invoke(input_data)
-
+    print(context)
     # QA 모델에 입력후 출력
     if task == 'QA':
         response = get_QA_output(context, input_data)
@@ -36,7 +36,8 @@ def process_output(category, input_data, task):
         response = get_guide_line_output(context, input_data)
     else:
         raise ValueError("Invalid task. Choose either 'QA' or 'GuideLine'.")
-    
     print('Answer:', response)
 
     return response
+
+
